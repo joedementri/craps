@@ -215,6 +215,8 @@ const els = {
   history: document.getElementById("history"),
   comePoints: document.getElementById("come-points"),
   dontComePoints: document.getElementById("dont-come-points"),
+  orientationLock: document.getElementById("orientation-lock"),
+  orientationContinue: document.getElementById("orientation-continue"),
 
   zoneAmounts: document.querySelectorAll("[data-zone-amount]"),
   dropZones: document.querySelectorAll(".drop-zone"),
@@ -307,6 +309,44 @@ const state = {
 };
 
 let fitRaf = 0;
+
+function getViewportSize() {
+  const vv = window.visualViewport;
+  if (vv && vv.width > 0 && vv.height > 0) {
+    return { width: vv.width, height: vv.height };
+  }
+  return { width: window.innerWidth, height: window.innerHeight };
+}
+
+function isMobileLikeDevice() {
+  return window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(hover: none)").matches;
+}
+
+function isLandscapeOrientation() {
+  const vp = getViewportSize();
+  return vp.width >= vp.height;
+}
+
+function updateOrientationGate() {
+  if (!els.orientationLock) return false;
+
+  const locked = isMobileLikeDevice() && !isLandscapeOrientation();
+  els.orientationLock.hidden = !locked;
+  els.orientationLock.classList.toggle("active", locked);
+  els.machine.classList.toggle("orientation-paused", locked);
+  return locked;
+}
+
+async function requestLandscapeLock() {
+  if (screen.orientation && typeof screen.orientation.lock === "function") {
+    try {
+      await screen.orientation.lock("landscape");
+    } catch (_) {
+      // Some browsers (notably iOS Safari) do not support locking.
+    }
+  }
+  scheduleFit();
+}
 
 function round2(n) {
   return Math.round(n * 100) / 100;
@@ -656,13 +696,16 @@ function renderSummary() {
 }
 
 function fitMachineToViewport() {
+  if (updateOrientationGate()) return;
+
   els.machine.style.setProperty("--app-scale", "1");
 
   const rect = els.machine.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
 
-  const scaleX = window.innerWidth / rect.width;
-  const scaleY = window.innerHeight / rect.height;
+  const vp = getViewportSize();
+  const scaleX = vp.width / rect.width;
+  const scaleY = vp.height / rect.height;
   const scale = Math.min(scaleX, scaleY, 1);
 
   els.machine.style.setProperty("--app-scale", String(scale));
@@ -1225,6 +1268,7 @@ function animateDice(final1, final2) {
 }
 
 async function rollDice() {
+  if (updateOrientationGate()) return;
   if (state.rolling) return;
 
   state.rolling = true;
@@ -1297,6 +1341,14 @@ function attachEvents() {
   els.clearBets.addEventListener("click", clearRemovableBets);
   els.rollBtn.addEventListener("click", rollDice);
   window.addEventListener("resize", scheduleFit);
+  window.addEventListener("orientationchange", scheduleFit);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", scheduleFit);
+    window.visualViewport.addEventListener("scroll", scheduleFit);
+  }
+  if (els.orientationContinue) {
+    els.orientationContinue.addEventListener("click", requestLandscapeLock);
+  }
 
   document.addEventListener("keydown", (e) => {
     if (e.code !== "Space" || e.repeat) return;
@@ -1348,6 +1400,7 @@ function init() {
   attachEvents();
   renderChips();
   resetGame(Number(els.bankrollInput.value) || 1000);
+  updateOrientationGate();
   scheduleFit();
 }
 

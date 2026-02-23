@@ -51,6 +51,63 @@ body {
   overflow: hidden;
 }
 
+.orientation-lock {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(5, 10, 20, 0.88);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+}
+
+.orientation-lock.active {
+  display: flex;
+}
+
+.orientation-card {
+  width: min(420px, 92vw);
+  border-radius: 14px;
+  border: 1px solid rgba(188, 220, 255, 0.35);
+  background: linear-gradient(180deg, #1e2e47, #152338);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  padding: 1rem;
+  text-align: center;
+}
+
+.orientation-card h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+.orientation-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #dbe9fb;
+  line-height: 1.35;
+}
+
+.orientation-card button {
+  margin-top: 0.8rem;
+  min-width: 180px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #9db8d6;
+  background: linear-gradient(180deg, #5f7696, #415971);
+  color: #edf5ff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.machine.orientation-paused {
+  filter: saturate(0.75) brightness(0.7);
+}
+
 .machine {
   --app-scale: 1;
   width: 1800px;
@@ -933,63 +990,4 @@ body {
   50% { transform: translate(-1px, 1px) rotate(1deg); }
   75% { transform: translate(1px, 1px) rotate(0.8deg); }
   100% { transform: translate(0, 0) rotate(0); }
-}
-
-@media (max-width: 1500px) {
-  .table-shell {
-    grid-template-columns: 300px 1fr;
-  }
-
-  .detail-zone {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .service-controls {
-    grid-template-columns: 1fr auto;
-  }
-}
-
-@media (max-width: 1100px) {
-  .top-bar {
-    grid-template-columns: 1fr;
-  }
-
-  .dice-strip {
-    grid-template-columns: 1fr;
-    justify-items: start;
-  }
-
-  .point-box {
-    justify-self: start;
-  }
-
-  .table-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .bottom-controls {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .place-row,
-  .bonus-row,
-  .aux-row,
-  .line-row,
-  .hardways-grid,
-  .detail-zone {
-    grid-template-columns: 1fr;
-  }
-
-  .zone-name.big,
-  .come-row .zone-name,
-  .pass-line .zone-name,
-  .dont-pass .zone-name {
-    font-size: 2.2rem;
-  }
-
-  .field-row .zone-name {
-    font-size: 1.45rem;
-  }
 }

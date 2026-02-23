@@ -1,6 +1,8 @@
 "use strict";
 
-const BOX_NUMBERS = [4, 5, 6, 8, 9, 10];
+const BOX_NUMBERS = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
+
+const CRAPLESS_DISABLED_BETS = new Set(["dontPass", "dontCome", "oddsDontPass"]);
 
 const BET_LABELS = {
   pass: "Pass Line",
@@ -16,12 +18,20 @@ const BET_LABELS = {
   place8: "Place 8",
   place9: "Place 9",
   place10: "Place 10",
+  place2: "Place 2",
+  place3: "Place 3",
+  place11: "Place 11",
+  place12: "Place 12",
+  buy2: "Buy 2",
+  buy3: "Buy 3",
   buy4: "Buy 4",
   buy5: "Buy 5",
   buy6: "Buy 6",
   buy8: "Buy 8",
   buy9: "Buy 9",
   buy10: "Buy 10",
+  buy11: "Buy 11",
+  buy12: "Buy 12",
   anySeven: "Any Seven",
   anyCraps: "Any Craps",
   horn: "Horn Bet",
@@ -45,12 +55,20 @@ const BET_PAY_TEXT = {
   place8: "7:6",
   place9: "7:5",
   place10: "9:5",
+  place2: "11:2",
+  place3: "11:4",
+  place11: "11:4",
+  place12: "11:2",
+  buy2: "6:1 less 5% vig on win",
+  buy3: "3:1 less 5% vig on win",
   buy4: "2:1 less 5% vig on win",
   buy5: "3:2 less 5% vig on win",
   buy6: "6:5 less 5% vig on win",
   buy8: "6:5 less 5% vig on win",
   buy9: "3:2 less 5% vig on win",
   buy10: "2:1 less 5% vig on win",
+  buy11: "3:1 less 5% vig on win",
+  buy12: "6:1 less 5% vig on win",
   anySeven: "4:1",
   anyCraps: "7:1",
   horn: "2/12 6:1, 3/11 3:1",
@@ -61,30 +79,42 @@ const BET_PAY_TEXT = {
 };
 
 const PLACE_PAY = {
+  2: [11, 2],
+  3: [11, 4],
   4: [9, 5],
   5: [7, 5],
   6: [7, 6],
   8: [7, 6],
   9: [7, 5],
   10: [9, 5],
+  11: [11, 4],
+  12: [11, 2],
 };
 
 const BUY_PAY = {
+  2: [6, 1],
+  3: [3, 1],
   4: [2, 1],
   5: [3, 2],
   6: [6, 5],
   8: [6, 5],
   9: [3, 2],
   10: [2, 1],
+  11: [3, 1],
+  12: [6, 1],
 };
 
 const PASS_ODDS_PAY = {
+  2: [6, 1],
+  3: [3, 1],
   4: [2, 1],
   5: [3, 2],
   6: [6, 5],
   8: [6, 5],
   9: [3, 2],
   10: [2, 1],
+  11: [3, 1],
+  12: [6, 1],
 };
 
 const DONT_ODDS_PAY = {
@@ -125,21 +155,29 @@ const CHIP_COLORS = [
 ];
 
 const PLACE_KEYS = [
+  ["place2", 2],
+  ["place3", 3],
   ["place4", 4],
   ["place5", 5],
   ["place6", 6],
   ["place8", 8],
   ["place9", 9],
   ["place10", 10],
+  ["place11", 11],
+  ["place12", 12],
 ];
 
 const BUY_KEYS = [
+  ["buy2", 2],
+  ["buy3", 3],
   ["buy4", 4],
   ["buy5", 5],
   ["buy6", 6],
   ["buy8", 8],
   ["buy9", 9],
   ["buy10", 10],
+  ["buy11", 11],
+  ["buy12", 12],
 ];
 
 const els = {
@@ -217,12 +255,20 @@ function createBetState() {
     place8: 0,
     place9: 0,
     place10: 0,
+    place2: 0,
+    place3: 0,
+    place11: 0,
+    place12: 0,
+    buy2: 0,
+    buy3: 0,
     buy4: 0,
     buy5: 0,
     buy6: 0,
     buy8: 0,
     buy9: 0,
     buy10: 0,
+    buy11: 0,
+    buy12: 0,
     anySeven: 0,
     anyCraps: 0,
     horn: 0,
@@ -234,7 +280,11 @@ function createBetState() {
 }
 
 function createPointMap() {
-  return { 4: 0, 5: 0, 6: 0, 8: 0, 9: 0, 10: 0 };
+  const map = {};
+  BOX_NUMBERS.forEach((num) => {
+    map[num] = 0;
+  });
+  return map;
 }
 
 const state = {
@@ -519,8 +569,8 @@ function renderStats() {
   for (let i = 2; i <= 12; i += 1) byRoll.push(`${i}:${state.stats.frequency[i]}`);
 
   lines.push(statRow("Rolls", state.stats.rolls));
-  lines.push(statRow("Naturals", state.stats.naturals));
-  lines.push(statRow("Craps", state.stats.craps));
+  lines.push(statRow("Come-out 7s", state.stats.naturals));
+  lines.push(statRow("Crapless Points (2/3/11/12)", state.stats.craps));
   lines.push(statRow("Points Set", state.stats.pointsSet));
   lines.push(statRow("Points Made", state.stats.pointsMade));
   lines.push(statRow("Seven Outs", state.stats.sevenOuts));
@@ -574,7 +624,9 @@ function renderPointPuck() {
   document.querySelectorAll(".point-puck").forEach((el) => el.remove());
 
   if (state.phase !== "point" || !state.point) return;
-  const zone = document.querySelector(`.place-zone[data-point="${state.point}"]`);
+  const zone =
+    document.querySelector(`.place-zone[data-point="${state.point}"]`) ||
+    document.querySelector(".point-box");
   if (!zone) return;
 
   const puck = document.createElement("div");
@@ -653,6 +705,7 @@ function canPlaceBet(zone, amt) {
   if (state.rolling) return "Wait until dice stop rolling.";
   if (!Number.isFinite(amt) || amt <= 0) return "Invalid chip amount.";
   if (state.bankroll < amt) return "Insufficient bankroll.";
+  if (CRAPLESS_DISABLED_BETS.has(zone)) return "Don't-side bets are disabled in Crapless.";
 
   if ((zone === "pass" || zone === "dontPass") && state.phase === "point") {
     return "Line bets are contract bets after a point is set.";
@@ -889,62 +942,35 @@ function resolveBuy(total, events) {
 }
 
 function resolveComeOut(total, events) {
-  if (total === 7 || total === 11) state.stats.naturals += 1;
-  if (total === 2 || total === 3 || total === 12) state.stats.craps += 1;
+  if (total === 7) state.stats.naturals += 1;
+  if ([2, 3, 11, 12].includes(total)) state.stats.craps += 1;
 
   const passAmt = state.bets.pass;
-  const dpAmt = state.bets.dontPass;
 
   if (passAmt > 0) {
-    if (total === 7 || total === 11) {
+    if (total === 7) {
       addBankroll(passAmt);
       addWin(passAmt);
       events.push({ text: `Pass Line wins ${money(passAmt)} (bet stays).`, type: "good" });
-    } else if (total === 2 || total === 3 || total === 12) {
-      state.bets.pass = 0;
-      addLoss(passAmt);
-      events.push({ text: `Pass Line loses ${money(passAmt)}.`, type: "bad" });
+      return;
     }
   }
 
-  if (dpAmt > 0) {
-    if (total === 2 || total === 3) {
-      addBankroll(dpAmt);
-      addWin(dpAmt);
-      events.push({ text: `Don't Pass wins ${money(dpAmt)} (bet stays).`, type: "good" });
-    } else if (total === 7 || total === 11) {
-      state.bets.dontPass = 0;
-      addLoss(dpAmt);
-      events.push({ text: `Don't Pass loses ${money(dpAmt)}.`, type: "bad" });
-    } else if (total === 12) {
-      events.push({ text: "Don't Pass pushes on 12.", type: "neutral" });
-    }
-  }
-
-  if (BOX_NUMBERS.includes(total)) {
-    state.phase = "point";
-    state.point = total;
-    state.stats.pointsSet += 1;
-    events.push({ text: `Point established: ${total}.`, type: "neutral" });
-  }
+  state.phase = "point";
+  state.point = total;
+  state.stats.pointsSet += 1;
+  events.push({ text: `Point established: ${total} (Crapless).`, type: "neutral" });
 }
 
 function resolvePendingCome(total, events) {
   const amt = state.bets.come;
   if (amt <= 0) return;
 
-  if (total === 7 || total === 11) {
+  if (total === 7) {
     state.bets.come = 0;
     addBankroll(amt * 2);
     addWin(amt);
     events.push({ text: `Come wins ${money(amt)}.`, type: "good" });
-    return;
-  }
-
-  if (total === 2 || total === 3 || total === 12) {
-    state.bets.come = 0;
-    addLoss(amt);
-    events.push({ text: `Come loses ${money(amt)}.`, type: "bad" });
     return;
   }
 

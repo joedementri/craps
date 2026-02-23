@@ -264,6 +264,7 @@ body {
 }
 
 .point-box {
+  position: relative;
   justify-self: end;
   min-width: 128px;
   text-align: center;
@@ -363,6 +364,26 @@ body {
   gap: 0.12rem;
 }
 
+.crapless-place-row {
+  grid-template-columns: repeat(10, 1fr);
+}
+
+.crapless-place-row .place-zone {
+  min-height: 164px;
+}
+
+.crapless-place-row .zone-name.big {
+  font-size: 2.05rem;
+}
+
+.crapless-place-row .place-strip {
+  font-size: 0.9rem;
+}
+
+.crapless-place-row .zone-pay {
+  font-size: 0.76rem;
+}
+
 .aux-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -393,7 +414,18 @@ body {
   filter: brightness(1.06);
 }
 
-.bet-zone.drag-target {
+.bet-zone.disabled-zone {
+  cursor: not-allowed;
+  filter: grayscale(0.45) brightness(0.82);
+  border-color: rgba(168, 171, 150, 0.62);
+  background: linear-gradient(180deg, rgba(86, 90, 54, 0.48), rgba(68, 68, 45, 0.56));
+}
+
+.bet-zone.disabled-zone:hover {
+  filter: grayscale(0.45) brightness(0.82);
+}
+
+.drop-zone.drag-target {
   box-shadow: 0 0 0 2px rgba(248, 255, 206, 0.9), 0 0 16px rgba(247, 255, 183, 0.48);
 }
 
@@ -420,15 +452,46 @@ body {
 
 .place-zone {
   min-height: 194px;
+  display: block;
+  position: relative;
 }
 
-.lay-strip,
 .place-strip {
   text-align: center;
   text-transform: uppercase;
   font-weight: 800;
   color: #e7f8d0;
   font-size: 1.05rem;
+}
+
+.buy-strip,
+.place-strip {
+  position: absolute;
+  left: 0.24rem;
+  right: 0.24rem;
+  border-radius: 6px;
+  border: 1px solid rgba(172, 220, 160, 0.65);
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.buy-strip {
+  top: 0.24rem;
+  background: linear-gradient(180deg, rgba(72, 112, 36, 0.64), rgba(53, 90, 29, 0.7));
+}
+
+.place-strip {
+  bottom: 0.24rem;
+  background: linear-gradient(180deg, rgba(34, 123, 46, 0.58), rgba(23, 95, 37, 0.65));
+}
+
+.zone-pay-inline {
+  color: #f8df68;
+  margin-left: 0.2rem;
+  font-size: 0.92em;
 }
 
 .dice-icon {
@@ -448,6 +511,20 @@ body {
   text-align: center;
 }
 
+.place-zone > .zone-name.big {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
 .zone-pay {
   font-size: 0.88rem;
   text-transform: uppercase;
@@ -464,6 +541,13 @@ body {
   padding: 0.08rem 0.45rem;
   font-size: 0.74rem;
   font-weight: 700;
+}
+
+.zone-amt.sub-amt {
+  right: 0.18rem;
+  top: 0.14rem;
+  font-size: 0.62rem;
+  padding: 0.04rem 0.34rem;
 }
 
 .zone-chip {
@@ -487,6 +571,15 @@ body {
   letter-spacing: 0.01em;
   pointer-events: none;
   z-index: 2;
+}
+
+.buy-strip .zone-chip,
+.place-strip .zone-chip {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+  font-size: 0.65rem;
+  bottom: -0.05rem;
 }
 
 .zone-chip.is-hidden {

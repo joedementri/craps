@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bubble Craps v2</title>
+  <title>Bubble Craps v2 - Crapless</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,7 +22,7 @@
         <button class="top-btn player" type="button">Player 1</button>
       </div>
 
-      <div class="limits">Min total bet: $5 &nbsp; | &nbsp; Max total bet: $100,000</div>
+      <div class="limits">Crapless Mode &nbsp; | &nbsp; Min total bet: $5 &nbsp; | &nbsp; Max total bet: $100,000</div>
 
       <div class="top-right">
         <div class="meter small">
@@ -114,7 +114,29 @@
           <div class="bonus-box">ALL TALL <span>34:1</span></div>
         </div>
 
-        <div class="place-row">
+        <div class="place-row crapless-place-row">
+          <div class="bet-zone place-zone" data-point="2">
+            <div class="buy-strip drop-zone" data-bet="buy2">
+              BUY <span class="zone-pay-inline">6:1</span>
+              <span class="zone-amt sub-amt" data-zone-amount="buy2">$0.00</span>
+            </div>
+            <div class="zone-name big">2</div>
+            <div class="place-strip drop-zone" data-bet="place2">
+              PLACE <span class="zone-pay-inline">11:2</span>
+              <span class="zone-amt sub-amt" data-zone-amount="place2">$0.00</span>
+            </div>
+          </div>
+          <div class="bet-zone place-zone" data-point="3">
+            <div class="buy-strip drop-zone" data-bet="buy3">
+              BUY <span class="zone-pay-inline">3:1</span>
+              <span class="zone-amt sub-amt" data-zone-amount="buy3">$0.00</span>
+            </div>
+            <div class="zone-name big">3</div>
+            <div class="place-strip drop-zone" data-bet="place3">
+              PLACE <span class="zone-pay-inline">11:4</span>
+              <span class="zone-amt sub-amt" data-zone-amount="place3">$0.00</span>
+            </div>
+          </div>
           <div class="bet-zone place-zone" data-point="4">
             <div class="buy-strip drop-zone" data-bet="buy4">
               BUY <span class="zone-pay-inline">2:1</span>
@@ -181,17 +203,39 @@
               <span class="zone-amt sub-amt" data-zone-amount="place10">$0.00</span>
             </div>
           </div>
+          <div class="bet-zone place-zone" data-point="11">
+            <div class="buy-strip drop-zone" data-bet="buy11">
+              BUY <span class="zone-pay-inline">3:1</span>
+              <span class="zone-amt sub-amt" data-zone-amount="buy11">$0.00</span>
+            </div>
+            <div class="zone-name big">11</div>
+            <div class="place-strip drop-zone" data-bet="place11">
+              PLACE <span class="zone-pay-inline">11:4</span>
+              <span class="zone-amt sub-amt" data-zone-amount="place11">$0.00</span>
+            </div>
+          </div>
+          <div class="bet-zone place-zone" data-point="12">
+            <div class="buy-strip drop-zone" data-bet="buy12">
+              BUY <span class="zone-pay-inline">6:1</span>
+              <span class="zone-amt sub-amt" data-zone-amount="buy12">$0.00</span>
+            </div>
+            <div class="zone-name big">12</div>
+            <div class="place-strip drop-zone" data-bet="place12">
+              PLACE <span class="zone-pay-inline">11:2</span>
+              <span class="zone-amt sub-amt" data-zone-amount="place12">$0.00</span>
+            </div>
+          </div>
         </div>
 
         <div class="aux-row">
-          <div class="bet-zone drop-zone" data-bet="dontCome">
+          <div class="bet-zone drop-zone disabled-zone" data-bet="dontCome">
             <div class="zone-name">Don't Come Bar</div>
-            <div class="zone-pay">1:1 (bar 12)</div>
+            <div class="zone-pay">Disabled in Crapless</div>
             <span class="zone-amt" data-zone-amount="dontCome">$0.00</span>
           </div>
-          <div class="bet-zone drop-zone" data-bet="oddsDontPass">
+          <div class="bet-zone drop-zone disabled-zone" data-bet="oddsDontPass">
             <div class="zone-name">Don't Pass Odds</div>
-            <div class="zone-pay">True odds</div>
+            <div class="zone-pay">Disabled in Crapless</div>
             <span class="zone-amt" data-zone-amount="oddsDontPass">$0.00</span>
           </div>
           <div class="bet-zone drop-zone" data-bet="oddsPass">
@@ -214,9 +258,9 @@
         </div>
 
         <div class="line-row">
-          <div class="bet-zone drop-zone dont-pass" data-bet="dontPass">
+          <div class="bet-zone drop-zone dont-pass disabled-zone" data-bet="dontPass">
             <div class="zone-name">DON'T PASS BAR</div>
-            <div class="zone-pay">Pays 1:1 (bar 12)</div>
+            <div class="zone-pay">Disabled in Crapless</div>
             <span class="zone-amt" data-zone-amount="dontPass">$0.00</span>
           </div>
           <div class="bet-zone drop-zone pass-line" data-bet="pass">
@@ -247,7 +291,7 @@
       </div>
 
       <div class="panel">
-        <h2>Don't Come Points</h2>
+        <h2>Don't Come Points (Disabled)</h2>
         <div id="dont-come-points" class="ladder-grid"></div>
       </div>
 
@@ -286,6 +330,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="crapless.js"></script>
 </body>
 </html>
